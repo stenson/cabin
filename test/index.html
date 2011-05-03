@@ -1,0 +1,44 @@
+<html>
+<head>
+  <style>
+    body {
+      background:royalblue;
+      color:white;
+    }
+  </style>
+</head>
+<body>
+  <ul>
+    
+  </ul>
+  <script src="../cabin.js"></script>
+  <script>
+    
+    var entry = cabin(function(o,info){
+      return true,
+        o("li.person",
+          o("h1",
+            o("strong", info.name),
+            o(" "),
+            o("em", "Jr.")
+          ),
+          o("h3","is " + info.age)
+        );
+    });
+    
+    var list = cabin(function(o,entries){
+      return o.parallel(entries,entry);
+    });
+    
+    document.getElementsByTagName("body")[0]
+      .appendChild(cabin.o("h1","This is a list"));
+    
+    var ul = document.getElementsByTagName("ul")[0];
+    ul.appendChild(list([
+      { name: "Whaddup", age: 23 },
+      { name: "Howdy", age: 25 },
+      { name: "Another", age: "fresh" }
+    ]));
+    
+  </script>
+</body>
