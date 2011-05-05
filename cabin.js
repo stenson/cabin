@@ -14,21 +14,21 @@ var cabin = (function(){
     , elR = /^[^\.#]+/
     , idR = /#([^\.$]+)/
     , classR = /\.([^\.$#]+)/g
-    // borowed from underscore
     , isStringNumber = function(o) {
-        return !!(o === '' || (o && o.charCodeAt && o.substr));
+        return typeof o === "string" || typeof o === "number";
       }
     , curry = function(fn) {
         var args = toA(arguments).slice(1);
         return function() {
           return fn.apply(null,args.concat(toA(arguments)));
         };
-      }
+      };
     
   // the building function
   var build = function(selector,duck) {
     // quick check, different case for text nodes
     if(tag == "text") return doc.createTextNode(duck);
+    if(!duck) duck = "";
     
     var tag = lastTag.exec(selector)[0]
       , nest = selector.slice(0,-tag.length-1)
@@ -46,8 +46,6 @@ var cabin = (function(){
     if(id) el.id = id[1];
     // make a string out of the classes
     if(classes.length) el.className = classes.join(" ");
-    // if no kids, just blank text
-    if(!kids.length) kids.push("");
     // now the actual appending
     for(var i = 0, l = kids.length; i < l; i++) {
       var kid = kids[i];
@@ -57,10 +55,13 @@ var cabin = (function(){
     return nest ? build(nest,el) : el;
   };
   
-  build.list = function(entries) {
+  build.list = function(els,sep) {
     var fragment = doc.createDocumentFragment();
-    for(var i = 0, l = entries.length; i < l; i++) {
-      fragment.appendChild(entries[i]);
+    for(var i = 0, l = els.length; i < l; i++) {
+      fragment.appendChild(els[i]);
+      if(sep && i < l-1) {
+        fragment.appendChild(sep.cloneNode(true));
+      }
     }
     return fragment;
   };

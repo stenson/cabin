@@ -1,0 +1,53 @@
+<html>
+<head>
+  <style>
+    body {
+      background:royalblue;
+      color:white;
+    }
+  </style>
+</head>
+<body>
+  <script src="../cabin.js"></script>
+  <script>
+    
+    !function() {
+
+      var doc = document
+        , data = [
+              { name: "Whaddup", age: 23 }
+            , { name: "Howdy", age: 25 }
+            , { name: "FREESHH", age: "fresh" }
+          ];
+
+      // pretty much the whole thing right here
+      var entry = cabin.curry(function(o,info){
+        return true,
+          o("li.person",
+            o("h2",{ rel: "fresh" },
+              o("strong", info.name), " ", o("em", "Jr.")
+            ),
+            o("h3","is ",o("em",info.age))
+          );
+      });
+
+      var list = function(entries) {
+        var els = [];
+        for(var i = 0, l = entries.length; i < l; i++) {
+          els.push(entry(entries[i]));
+        }
+        return cabin.list(els);
+      };
+
+      doc.body.appendChild(cabin("h1", "This is ",cabin("em", "italicized")," text"));
+
+      var els = [];
+      for(var i = 0, l = data.length; i < l; i++) {
+        els.push(entry(data[i]));
+      }
+      doc.body.appendChild(cabin("ul#stuff",cabin.list(els,cabin("li","&"))));
+
+    }();
+  
+  </script>
+</body>
