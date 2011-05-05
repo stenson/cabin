@@ -3,64 +3,71 @@ var cabin = (function(){
     , toA = function(args) {
         return Array.prototype.slice.apply(args);
       }
-    , getClasses = function(str) {
+    , extract = function(pattern,str) {
         var matches = [];
-        str.replace(classR,function(_,c){
+        str.replace(pattern,function(_,c){
           matches.push(c);
         });
         return matches;
       }
-    , white = /^\s+$/
+    , lastTag = /[^\s]+$/
     , elR = /^[^\.#]+/
     , idR = /#([^\.$]+)/
-    , classR = /\.([^\.$#]+)/g;
+    , classR = /\.([^\.$#]+)/g
+    // borowed from underscore
+    , isStringNumber = function(o) {
+        return !!(o === '' || (o && o.charCodeAt && o.substr));
+      }
+    , curry = function(fn) {
+        var args = toA(arguments).slice(1);
+        return function() {
+          return fn.apply(null,args.concat(toA(arguments)));
+        };
+      }
     
   // the building function
-  var o = function(selector) {
-    // whitespace check
-    if(white.test(selector))
-      return doc.createTextNode(selector);
-    // ok, now proceed as normal
-    var kids = toA(arguments).slice(1)
-      , id = idR.exec(selector)
-      , classes = getClasses(selector)
-      , el = doc.createElement(elR.exec(selector));
+  var build = function(selector,duck) {
+    // quick check, different case for text nodes
+    if(tag == "text") return doc.createTextNode(duck);
     
-    if(id)
-      el.id = id[1];
-    if(classes.length)
-      el.className = classes.join(" ");
-    if(kids[0].nodeType) {
-      for(var i = 0, l = kids.length; i < l; i++) {
-        el.appendChild(kids[i]);
-      }
+    var tag = lastTag.exec(selector)[0]
+      , nest = selector.slice(0,-tag.length-1)
+      , noOpts = duck.nodeType || isStringNumber(duck)
+      , opts = noOpts ? {} : duck
+      , kids = toA(arguments).slice(noOpts ? 1 : 2)
+      , id = idR.exec(tag)
+      , classes = extract(classR,tag)
+      , el = doc.createElement(elR.exec(tag));
+    
+    for(var o in opts) {
+      if(opts.hasOwnProperty(o)) el.setAttribute(o,opts[o]);
     }
-    else
-      el.appendChild(doc.createTextNode(kids[0]));
-    return el;
+    // if there's an id, get the good match
+    if(id) el.id = id[1];
+    // make a string out of the classes
+    if(classes.length) el.className = classes.join(" ");
+    // if no kids, just blank text
+    if(!kids.length) kids.push("");
+    // now the actual appending
+    for(var i = 0, l = kids.length; i < l; i++) {
+      var kid = kids[i];
+      el.appendChild(kid.nodeType ? kid : doc.createTextNode(kid));
+    }
+    // recurse on nest if there is one
+    return nest ? build(nest,el) : el;
   };
   
-  o.parallel = function(entries,template) {
+  build.list = function(entries) {
     var fragment = doc.createDocumentFragment();
     for(var i = 0, l = entries.length; i < l; i++) {
-      fragment.appendChild(template(entries[i]));
+      fragment.appendChild(entries[i]);
     }
     return fragment;
   };
   
-  // the interface returns a function
-  var cabinFn = function(fn) {
-    // the curried function
-    return function() {
-      var fragment = doc.createDocumentFragment();
-      fragment.appendChild(fn.apply(null,[o].concat(toA(arguments))));
-      return fragment;
-    };
-  };
-  // for easy, non-currying access
-  cabinFn.o = function() {
-    return o.apply(null,arguments);
+  build.curry = function(fn) {
+    return curry(fn,build);
   };
   
-  return cabinFn;
+  return build;
 })();
