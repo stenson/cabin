@@ -17,4 +17,4 @@ Cabin is a function <code>cabin</code>, which curries your template function, so
         );
     });
 
-Then you can call <code>build({ name: "Old Log Cabin", age: 100 })</entry> and you'll get back a <code>documentFragment</code>.
+Then you can call <code>build({ name: "Old Log Cabin", age: 100 })</code> and you'll get back a <code>documentFragment</code>.
