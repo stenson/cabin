@@ -1,0 +1,12 @@
+{
+  "name": "cabin",
+  "description": "build little html buildings with css selectors and stuff",
+  "version": "0.0.1",
+  "homepage": "https://github.com/stenson/cabin",
+  "authors": ["Rob Stenson <@blickwickle>"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stenson/cabin.git"
+  },
+  "main": "./cabin.js"
+}
