@@ -27,7 +27,7 @@ var cabin = (function(){
   // the building function
   var build = function(selector,duck) {
     // quick check, different case for text nodes
-    if(tag == "text") return doc.createTextNode(duck);
+    if(selector == "text") return doc.createTextNode(duck);
     if(!duck) duck = "";
     
     var tag = lastTag.exec(selector)[0]

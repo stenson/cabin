@@ -17,6 +17,13 @@
       "<li><span>Nice</span></li>", "Sets inner html with span inside");
   });
   
+  test("true textNode additions",function(){
+    equals(
+      cabin("text","fresh").nodeType,
+      document.createTextNode("fresh").nodeType,
+      "can build a true text node");
+  });
+  
   test("setting id and class and nesting with dom css selectors",function(){
     // setting attributes with a selector
     equals(
