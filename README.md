@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/stenson/cabin.png)](http://travis-ci.org/stenson/cabin)
 Cabin
 ---
 
